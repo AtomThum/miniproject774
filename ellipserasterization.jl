@@ -53,3 +53,15 @@ end
 
 # Test
 scatter(rasterellipse(20, 15), aspect_ratio=:equal)
+
+# Rotating an ellipse
+rotate(θ) = [cos(θ) -sin(θ); sin(θ) cos(θ)]
+
+newpoints = Tuple{Int, Int}[]
+for i in rasterellipse(20, 15)
+    global rotate
+    a = rotate(1/3*π) * collect(i)
+    push!(newpoints, (round(a[1]), round(a[2])))
+end
+
+scatter!(newpoints)
