@@ -69,6 +69,7 @@ function rotate(θ, setpoints)
     return newpoints
 end
 
+# Translate a set of matrices
 function translate(setpoints, xtransposed, ytransposed)
     newpoints = Tuple{Int, Int}[]
     for i in setpoints
@@ -79,7 +80,7 @@ function translate(setpoints, xtransposed, ytransposed)
     end
 end
 
-# N is the maximum size of the ellipes that can fit in the middle of the circle
+# Creating a column matrix for concatenation
 map(n, gridsize, x, y) = x + n + 1 - gridsize*(y - n)
 function vectorize(n, setpoints)
     gridsize = 2*n + 1
@@ -94,7 +95,25 @@ function vectorize(n, setpoints)
     return vect
 end
 
-ellipse = rasterellipse(majoraxis, minoraxis)
+# ellipse = rasterellipse(majoraxis, minoraxis)
 
-scatter(ellipse, aspect_ratio=:equal)
-display(vectorize(10, ellipse))
+# scatter(ellipse, aspect_ratio=:equal)
+# display(vectorize(10, ellipse))
+
+n = 5 # 2n + 1 = gridsize
+N = (2*n + 1)^2
+# Defining basis
+major_axis_basis = range(1, 5)
+
+# Generating a matrix with the basis
+minor_axis_basis = 3
+basisMatrix = Array{Float64}(undef, N)
+for i in major_axis_basis
+    global n
+    global basisMatrix
+    tempEllipse = rasterellipse(i, minor_axis_basis)
+    tempVect = vectorize(n, tempEllipse)
+    basisMatrix = hcat(basisMatrix, tempVect)
+end
+
+display(basisMatrix)
