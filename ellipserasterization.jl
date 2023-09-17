@@ -1,6 +1,7 @@
 using Plots
+using LinearAlgebra
 
-# Initialize an ellipse
+# Ellipse tracing algorithm
 function rasterellipse(a, b)
     # Initial position of trace
     x = 0
@@ -51,17 +52,38 @@ function rasterellipse(a, b)
     return points
 end
 
-# Test
-scatter(rasterellipse(20, 15), aspect_ratio=:equal)
-
-# Rotating an ellipse
-rotate(θ) = [cos(θ) -sin(θ); sin(θ) cos(θ)]
-
-newpoints = Tuple{Int, Int}[]
-for i in rasterellipse(20, 15)
-    global rotate
-    a = rotate(1/3*π) * collect(i)
-    push!(newpoints, (round(a[1]), round(a[2])))
+# Wil be corrected later if possible
+# Rotation algorithm for any set of points. (Very Incomplete)
+function rotate(θ, setpoints)
+    newpoints = Tuple{Int, Int}[]
+    R = [cos(θ) -sin(θ); sin(θ) cos(θ)]
+    for i in setpoints
+        a = R * collect(i)
+        floorx = floor(a[1])
+        floory = floor(a[2])
+        # ceilx = ceil(a[1])
+        # ceily = ceil(a[2])
+        push!(newpoints, (floorx, floory))
+        # push!(newpoints, (ceilx, ceily))
+    end
+    return newpoints
 end
 
-scatter!(newpoints)
+# N is the maximum size of the ellipes that can fit in the middle of the circle
+function mapping(setpoints, N)
+    countx = 2*N + 1
+    setvector = zeros(countx)
+    minimap(x, y) = x + halfN 
+    for i in setpoints
+    end
+    return setvector
+
+majoraxis = 10
+minoraxis = 10
+
+ellipse = rasterellipse(majoraxis, minoraxis)
+
+scatter(ellipse, aspect_ratio=:equal)
+# scatter(rotate(π/6, ellipse))
+
+# Sets of basis

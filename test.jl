@@ -1,0 +1,1 @@
+display(zeros(100, 1))
