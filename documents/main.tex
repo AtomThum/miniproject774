@@ -1,0 +1,155 @@
+\documentclass[a4paper, 12pt, oneside]{memoir}
+
+% Thai typesetting system
+\usepackage{indentfirst}
+\usepackage[none]{hyphenat}
+
+% Text fonts and language setup
+\usepackage[no-math]{fontspec}
+% \usepackage[fontsize = 12pt]{fontsize}
+\defaultfontfeatures{Scale = MatchLowercase, Mapping = tex-text}
+\setmainfont{Sarabun}
+\XeTeXlinebreakskip=0pt plus 3pt
+\emergencystretch=1em
+% \XeTeXlinebreaklocale "th_TH"
+% \usepackage{polyglossia}
+% \setdefaultlanguage[numerals = arabiic]{thai}
+
+% Math fonts
+\usepackage{mathtools}
+\usepackage[mathrm = sym, math-style = ISO, warnings-off = {mathtools-colon}]{unicode-math} % mathrm = sym; compat with physics package.
+\setmathfont[Scale = MatchLowercase]{Concrete-Math.otf}
+\setmathfont[Scale = MatchLowercase, range = {bb, \in}]{STIXTwoMath-Regular.otf}
+\setoperatorfont\symscr
+\usepackage{dsfont}
+
+% Page layout
+\setulmarginsandblock{3cm}{2cm}{*}
+\setlrmarginsandblock{4cm}{*}{0.5}
+\setlength{\headheight}{24.90704pt}
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{0.25em}
+\setlength{\beforechapskip}{20pt}
+\noDisplayskipStretch
+\setSpacing{1.1}
+\maxsecnumdepth{subsection}
+\setcounter{tocdepth}{2}
+\checkandfixthelayout
+
+% FancyHDR page numberings
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[R]{\thepage}
+
+% Sections formatting
+\usepackage{titlesec}
+% \makeatletter
+%     \renewcommand\printchaptername{
+%         \chapnamefont\MakeUppercase{\@chapapp}
+%     }
+% \makeatother
+\assignpagestyle{\chapter}{fancy}
+\titleformat{\chapter}{\normalfont\fontsize{15}{15}\bfseries\filcenter}{CHAPTER \thechapter}{1em}{}
+% \renewcommand*{\printchaptertitle}[1]{\chaptitlefont\MakeUppercase{#1}}
+\titleformat{\section}{\normalfont\fontsize{14}{14}\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\fontsize{13}{13}\bfseries}{\thesubsection}{1em}{}
+% Table of Contents
+\renewcommand{\printtoctitle}[1]{{\hfill\fontsize{15}{15}\bfseries #1 \hfill}}
+\renewcommand{\printlottitle}[1]{{\hfill\fontsize{15}{15}\bfseries #1 \hfill}}
+\renewcommand{\printloftitle}[1]{{\hfill\fontsize{15}{15}\bfseries #1 \hfill}}
+% \renewcommand*{\cftsectionleader}{\hfill}
+% \renewcommand*{\cftsubsectionleader}{\hfill}
+% Bibliographies
+\usepackage[square, numbers]{natbib}
+\bibliographystyle{bibstyle}
+
+%%%%%%%%%%%%%%%%%%%
+\allowdisplaybreaks
+% Packages
+\usepackage{xcolor}
+\usepackage{caption, subcaption, graphicx, pdfpages, wrapfig}
+\graphicspath{{diagrams/}}
+\usepackage[inline]{enumitem}
+
+\usepackage{multicol}
+\setlength{\columnseprule}{1pt}
+\def\columnseprulecolor{\color{lightgray}}
+
+\definecolor{hyperrefcolor}{cmyk}{0.75, 0.75, 0, 0}
+\usepackage[colorlinks, allcolors = hyperrefcolor]{hyperref}
+\usepackage{url}
+\usepackage{cleveref}
+% \renewcommand{\url}[1]{\href{#1}{\textit{#1}}}
+
+% Physics notation
+\usepackage{siunitx}
+\usepackage{physics}
+\usepackage{subsupscripts}
+\AtBeginDocument{\RenewCommandCopy\qty\SI}
+
+%%% Notation Commands
+% Mathematical constants
+\newcommand{\eu}{\symrm{e}}
+\newcommand{\iu}{\symrm{i}}
+\newcommand{\cpi}{\symrm{\pi}}
+% Small mathematical operators
+\DeclareMathOperator*{\ssum}{\symrm{\Sigma}}
+% Matrix/vectors notation
+\newcommand{\conj}{^{\ast}}
+\newcommand{\dagr}{^{\dag}}
+\newcommand{\trnsp}{^{\intercal}}
+\newcommand{\iden}{\symbb{I}}
+\newcommand{\one}{\mathds{1}}
+\newcommand{\vv}[1]{\pmb{\symrm{#1}}}
+\renewcommand\vdot\cdot
+\newcommand{\pprime}{{\prime\prime}}
+\newcommand{\ppprime}{{\prime\prime\prime}}
+\newcommand{\pppprime}{{\prime\prime\prime\prime}}
+\newcommand{\uv}[1]{\hat{\vv{e}}_{#1}}
+\newcommand{\tensor}{\otimes}
+\newcommand{\lbra}[2]{\lsubscript{\bra{#1}}{#2}}
+
+% Delta functions, Kronecker and Dirac
+\newcommand{\kdel}[1]{\symrm{\delta}_{#1}}
+\newcommand{\ddel}{\symrm{\delta}}
+% Discrete Differences
+\newcommand{\Dd}[1]{\symrm{\Delta}{#1}}
+\newcommand{\appr}{\rightarrow}
+
+% Physics Symbols
+\newcommand{\lagr}{\mathcal{L}}
+\newcommand{\haml}{\mathcal{H}}
+\newcommand{\hilb}{\mathcal{E}}
+\newcommand{\pintm}[1]{\mathcal{D}[#1]}
+
+% Glossaries
+% \usepackage[symbols]{glossaries-extra}
+% \include{chapters/listsofsymbols}
+
+\begin{document}
+
+\includepdf[pages = {1-3}]{coverpage.pdf}
+
+\frontmatter
+
+\include{chapters/acknowledgement}
+
+\tableofcontents*
+\listoffigures
+\listoftables
+
+% \printunsrtglossary[type = symbols, style = longright, title = {List of Symbols}]
+
+\mainmatter
+
+\include{chapters/introduction}
+\include{chapters/literaturereview}
+\include{chapters/methodology}
+\include{chapters/results}
+\include{chapters/discussions}
+
+\bibliography{ref}
+
+\end{document}

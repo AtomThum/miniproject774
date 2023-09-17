@@ -1,0 +1,103 @@
+\documentclass[a4paper, oneside]{memoir}
+
+% Fonts and language setup
+\usepackage[no-math]{fontspec}
+\defaultfontfeatures{Scale = MatchLowercase, Mapping = tex-text}
+\usepackage[fontsize = 14pt]{fontsize}
+\usepackage{polyglossia}
+\setdefaultlanguage[numerals = arabic]{thai}
+\setmainfont[Script = Thai]{Sarabun}
+\setotherlanguage{english}
+\XeTeXlinebreaklocale "th"
+\XeTeXlinebreakskip = 0pt plus 0pt
+
+% Page layout
+\setulmarginsandblock{2cm}{*}{1}
+\setlrmarginsandblock{4cm}{4cm}{*}
+\setlength{\headheight}{24.90704pt}
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{0.25em}
+\setlength{\beforechapskip}{20pt}
+\noDisplayskipStretch
+\setSpacing{1.1}
+\checkandfixthelayout
+
+% Packages
+\usepackage{graphicx}
+\usepackage{array}
+
+% Names
+\newcommand{\thaiheader}{การคำนวณทางคณิตศาสตร์ของศิลปะจากลูกตุ้มแกว่งกวัด}
+\newcommand{\engheader}{The mathematics of pendulum art}
+\newcommand{\thaiauthor}{
+    นายภูริพัฒน์ ถัมภ์บรรฑุ \\ นายกฤษพัชร วงค์ขวัญ \\ นายอัศวิน นวมภักดี \\ นายพลภัทร บุญนิมิตร \\ ณัฏฐนิจ ตรีวิจิตรไพศาล
+}
+\newcommand{\engauthor}{
+    Mr. Puripat Thumbanthu \\ Mr. Kritpatchara Wongkwan \\ Mr. Atsawin Nuampugdee \\ Mr. Phollapat Bunnimit \\ Mrs. Nuttanit Treevijitpaisan
+}
+
+\begin{document}
+
+% Hard coverpage
+\pagestyle{empty}
+\begin{center}
+    \includegraphics[width = 3cm]{logo/kmuttlogo.png}
+\end{center}
+\vspace{1em}
+\begin{center}
+    \thaiheader
+
+    \engheader
+
+    \vfill
+    \engauthor
+
+    \vfill
+    A project submitted in partial fulfilment of the requirements
+
+    for the High school diploma in Engineering Science Classroom
+
+    on the subject ESC774 Into the real world oscillation
+
+    King's Mongkut University of Technology Thonburi
+
+    2023
+\end{center}
+\newpage \ \newpage
+
+% Soft coverpage
+\setlrmarginsandblock{4cm}{2cm}{*}
+\checkandfixthelayout
+
+\begin{center}
+    \thaiheader
+
+    \engheader
+    
+    \vfill
+    \engauthor
+
+    \vfill
+    A project submitted in partial fulfilment of the requirements
+
+    for the High school diploma in Engineering Science Classroom
+
+    on the subject ESC774 Into the real world oscillation
+
+    King's Mongkut University of Technology Thonburi
+    
+    2023
+    \vfill
+\end{center}
+
+Project advisors
+\vspace{1em}
+
+\begin{tabular}{m{0.55\textwidth} l}
+    \centering\rule{0.5\textwidth}{1pt} & External advisor \\
+    \centering(Dr. Kachanon Nirunpong) & \\ [1em]
+    % \centering\rule{0.5\textwidth}{1pt} & Internal advisor \\
+    % \centering(Dr. Ekapong Hirunsirisawat) & \\
+\end{tabular}
+
+\end{document}
