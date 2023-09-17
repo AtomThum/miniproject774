@@ -69,21 +69,32 @@ function rotate(θ, setpoints)
     return newpoints
 end
 
-# N is the maximum size of the ellipes that can fit in the middle of the circle
-function mapping(setpoints, N)
-    countx = 2*N + 1
-    setvector = zeros(countx)
-    minimap(x, y) = x + halfN 
+function translate(setpoints, xtransposed, ytransposed)
+    newpoints = Tuple{Int, Int}[]
     for i in setpoints
+        a = collect(i)
+        x = a[1] + xtransposed
+        y = a[2] + ytransposed
+        push!(newpoints, (x, y))
     end
-    return setvector
+end
 
-majoraxis = 10
-minoraxis = 10
+# N is the maximum size of the ellipes that can fit in the middle of the circle
+map(n, gridsize, x, y) = x + n + 1 - gridsize*(y - n)
+function vectorize(n, setpoints)
+    gridsize = 2*n + 1
+    vect = zeros(gridsize^2, 1)
+    for i in setpoints
+        x, y = i[1], i[2]
+        if abs(x) > gridsize || abs(y) > gridsize
+        else
+            vect[map(n, gridsize, x, y)] = 1
+        end
+    end
+    return vect
+end
 
 ellipse = rasterellipse(majoraxis, minoraxis)
 
 scatter(ellipse, aspect_ratio=:equal)
-# scatter(rotate(π/6, ellipse))
-
-# Sets of basis
+display(vectorize(10, ellipse))
