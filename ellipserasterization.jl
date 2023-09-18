@@ -55,6 +55,9 @@ end
 # Wil be corrected later if possible
 # Rotation algorithm for any set of points. (Very Incomplete)
 function rotate(θ, setpoints)
+    if θ == 0
+        return setpoints
+    end
     newpoints = Tuple{Int,Int}[]
     rotationMatrix = [cos(θ) -sin(θ); sin(θ) cos(θ)]
     for i in setpoints
@@ -70,7 +73,10 @@ function rotate(θ, setpoints)
 end
 
 # Translate a set of matrices
-function translate(setpoints, xTransposed, yTransposed)
+function translate(xTransposed, yTransposed, setpoints)
+    if xTransposed == 0 && yTransposed == 0
+        return setpoints
+    end
     newpoints = Tuple{Int,Int}[]
     for i in setpoints
         a = collect(i)
@@ -87,7 +93,7 @@ function vectorize(n, setpoints)
     vect = zeros(gridsize^2, 1)
     for i in setpoints
         x, y = i[1], i[2]
-        if abs(x) > gridsize || abs(y) > gridsize
+        if map(n, gridsize, x, y) > gridsize
         else
             vect[map(n, gridsize, x, y)] = 1
         end
@@ -104,15 +110,34 @@ n = 5 # 2n + 1 = gridsize
 N = (2 * n + 1)^2
 # Defining basis
 majorAxisBasis = range(1, 5)
-minorAxisBasis = 3
+minorAxisBasis = range(1, 5)
+anglesBasis = range(0, 180, 20)
+transpositionBasis = [(0, 0), (3, 3), (-3, -3), (-3, 3), (3, -3)]
 # Generating a matrix with the basis
 basisMatrix = Array{Float64}(undef, N)
-for i in majorAxisBasis
-    global n
-    global basisMatrix
-    tempEllipse = rasterellipse(i, minorAxisBasis)
-    tempVect = vectorize(n, tempEllipse)
-    basisMatrix = hcat(basisMatrix, tempVect)
+for major in majorAxisBasis
+    for minor in minorAxisBasis
+        for angles in anglesBasis
+            for trans in transpositionBasis
+                global n
+                global basisMatrix
+                translatedX = trans[1]
+                translatedY = trans[2]
+                tempEllipse = rotate(deg2rad(angles), rasterellipse(major, minor))
+                translatedEllipse = translate(translatedX, translatedY, tempEllipse)
+                tempVect = vectorize(n, tempEllipse)
+                basisMatrix = hcat(basisMatrix, tempVect)
+            end
+        end
+    end
 end
 
 display(basisMatrix)
+pseudoInverseMatrix = pinv(basisMatrix) # Calculate pseudoinverse
+display(pseudoInverseMatrix)
+
+pictureVector = rand(Float64, (121, 1))
+display(pictureVector)
+
+lineThickness = normalize(pseudoInverseMatrix * pictureVector)
+display(lineThickness)
