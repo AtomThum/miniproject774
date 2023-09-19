@@ -1,68 +1,87 @@
 using Plots
+using LinearAlgebra
 
-function rotate_ellipse(a, b, theta)
+function rasterellipse(a, b)
+    # Initial position of trace
     x = 0
     y = b
 
-    points = []  # Initialize a list to store the points in the ellipse
-    a_sqr = a * a  # Precalc for saving computation time
-    b_sqr = b * b
-    a_sqr2 = 2 * a_sqr
-    b_sqr2 = 2 * b_sqr
-    p1 = b_sqr - b * a_sqr + 1 / 4 * a_sqr  # Given by the properties of the ellipse, p of the first section
-    dx = 0  # Initialize the step in the x direction
-    dy = a_sqr2 * b
+    points = Tuple{Int,Int}[] # Initialize a tuple to store the points in the ellipse
+    aSqr = a * a # Precalc for saving computation time
+    bSqr = b * b
+    aSqr2 = 2 * aSqr
+    bSqr2 = 2 * bSqr
+    p1 = bSqr - b * aSqr + 1 / 4 * aSqr # Given by the properties of the ellipse, p of the first section
+    dx = 0 # Initialize the step in the x direction
+    dy = aSqr2 * b
 
     # Lower region mirror
     while dx < dy
-        push!(points,
-            (x * cos(theta) - y * sin(theta), x * sin(theta) + y * cos(theta)),
-            (-x * cos(theta) - y * sin(theta), -x * sin(theta) + y * cos(theta)),
-            (x * cos(theta) + y * sin(theta), x * sin(theta) - y * cos(theta)),
-            (-x * cos(theta) + y * sin(theta), -x * sin(theta) - y * cos(theta))
-        )
+        append!(points, [
+            (x, y), (-x, y), (x, -y), (-x, -y)
+        ])
         x += 1
-        dx += b_sqr2
+        dx += bSqr2
         if p1 < 0
-            p1 += dx + b_sqr
+            p1 += dx + bSqr
         else
             y -= 1
-            dy -= a_sqr2
-            p1 += dx + b_sqr - dy
+            dy -= aSqr2
+            p1 += dx + bSqr - dy
         end
     end
 
     # Upper region mirror
-    p2 = b_sqr * (x + 1 / 2) ^ 2 + a_sqr * (y - 1) ^ 2 - a_sqr * b_sqr  # p of the upper section
+    p2 = bSqr * (x + 1 / 2)^2 + aSqr * (y - 1)^2 - aSqr * bSqr # p of the upper section
     while y >= 0
-        push!(points,
-            (x * cos(theta) - y * sin(theta), x * sin(theta) + y * cos(theta)),
-            (-x * cos(theta) - y * sin(theta), -x * sin(theta) + y * cos(theta)),
-            (x * cos(theta) + y * sin(theta), x * sin(theta) - y * cos(theta)),
-            (-x * cos(theta) + y * sin(theta), -x * sin(theta) - y * cos(theta))
-        )
+        append!(points, [
+            (x, y), (-x, y), (x, -y), (-x, -y)
+        ])
         y -= 1
-        dy -= a_sqr2
+        dy -= aSqr2
 
         if p2 > 0
-            p2 += a_sqr - dy
+            p2 += aSqr - dy
         else
             x += 1
-            dx += b_sqr2
-            p2 += a_sqr - dy + dx
+            dx += bSqr2
+            p2 += aSqr - dy + dx
         end
     end
-
     return points
 end
 
-# Test
-points = rotate_ellipse(100, 50, π/6)
+map(n, gridsize, x, y) = x + n + 1 - gridsize * (y - n)
+reversemap(n, gridsize, num)
+function vectorize(n, setpoints)
+    gridsize = 2 * n + 1
+    vect = zeros(gridsize^2, 1)
+    for i in setpoints
+        x, y = i[1], i[2]
+        try
+            vect[map(n, gridsize, x, y)] = 1
+        catch
+            0
+        end
+    end
+    return vect
+end
 
-x = [p[1] for p in points]
-y = [p[2] for p in points]
+# Old vectorize
+# function vectorize(n, setpoints)
+#     gridsize = 2 * n + 1
+#     vect = zeros(gridsize^2, 1)
+#     for i in setpoints
+#         x, y = i[1], i[2]
+#         if map(n, gridsize, x, y) <= gridsize
+#             vect[map(n, gridsize, x, y)] = 1
+#         else
+#         end
+#     end
+#     return vect
+# end
 
-scatter(x, y, label="Ellipse")
-scatter!(x, y, label="Rotated Ellipse")
-
-plot!(aspect_ratio=:equal, legend=true)
+ellipse = rasterellipse(5, 5)
+ellipseVector = vectorize(5, ellipse)
+print(ellipseVector)
+scatter(ellipse)

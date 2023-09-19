@@ -1,5 +1,6 @@
 using Plots
 using LinearAlgebra
+using Colors
 
 # Ellipse tracing algorithm
 function rasterellipse(a, b)
@@ -62,12 +63,9 @@ function rotate(θ, setpoints)
     rotationMatrix = [cos(θ) -sin(θ); sin(θ) cos(θ)]
     for i in setpoints
         a = rotationMatrix * collect(i)
-        floorx = floor(a[1])
-        floory = floor(a[2])
-        # ceilx = ceil(a[1])
-        # ceily = ceil(a[2])
+        floorx = round(Int, a[1])
+        floory = round(Int, a[2])
         push!(newpoints, (floorx, floory))
-        # push!(newpoints, (ceilx, ceily))
     end
     return newpoints
 end
@@ -93,9 +91,10 @@ function vectorize(n, setpoints)
     vect = zeros(gridsize^2, 1)
     for i in setpoints
         x, y = i[1], i[2]
-        if map(n, gridsize, x, y) > gridsize
-        else
+        try
             vect[map(n, gridsize, x, y)] = 1
+        catch
+            0
         end
     end
     return vect
@@ -111,10 +110,11 @@ N = (2 * n + 1)^2
 # Defining basis
 majorAxisBasis = range(1, 5)
 minorAxisBasis = range(1, 5)
-anglesBasis = range(0, 180, 20)
+anglesBasis = range(0, 90, 10)
 transpositionBasis = [(0, 0), (3, 3), (-3, -3), (-3, 3), (3, -3)]
 # Generating a matrix with the basis
-basisMatrix = Array{Float64}(undef, N)
+# basisMatrix = Array{Float64}(undef, N)
+basisMatrix = zeros(N, 1)
 for major in majorAxisBasis
     for minor in minorAxisBasis
         for angles in anglesBasis
@@ -132,12 +132,41 @@ for major in majorAxisBasis
     end
 end
 
+println("Basis Matrix:")
 display(basisMatrix)
-pseudoInverseMatrix = pinv(basisMatrix) # Calculate pseudoinverse
-display(pseudoInverseMatrix)
+# pseudoInverseMatrix = LinearAlgebra.pinv(basisMatrix) # Calculate pseudoinverse
 
-pictureVector = rand(Float64, (121, 1))
+# println("Pseudoinverse of Basis Matrix:")
+# display(pseudoInverseMatrix)
+
+println("Picture Vector:")
+pictureVector = vectorize(5, rasterellipse(2, 5))
 display(pictureVector)
 
-lineThickness = normalize(pseudoInverseMatrix * pictureVector)
+println("Line Thickness Vector:")
+lineThickness = basisMatrix\pictureVector
 display(lineThickness)
+
+pictureTransformed = basisMatrix * lineThickness
+
+function inverseMap(n, setpoints)
+    gridsize = 2 * n + 1
+    points = Array{Float64}(undef, gridsize, gridsize)
+    counter = 1
+    for i in setpoints
+        if mod(counter, gridsize) == 0
+            xIndex = gridsize
+        else
+            xIndex = mod(counter, gridsize)
+        end
+        yIndex = ceil(Int64, counter/gridsize)
+        points[xIndex, yIndex] = i
+        counter += 1
+    end
+    return points
+end
+
+pictureMatrix = inverseMap(n, pictureTransformed)
+img = Gray.(pictureMatrix)
+
+plot(heatmap(img), size=(N, N), color=:grays)
