@@ -1,6 +1,8 @@
 using Plots
 using LinearAlgebra
-using Colors
+using Colors # For heatmapping
+
+#### Functions
 
 # Ellipse tracing algorithm
 function rasterellipse(a, b)
@@ -54,7 +56,7 @@ function rasterellipse(a, b)
 end
 
 # Wil be corrected later if possible
-# Rotation algorithm for any set of points. (Very Incomplete)
+# Rotation algorithm for any set of points. Used to rotate ellipses to generate a rotated basis (Very Incomplete)
 function rotate(θ, setpoints)
     if θ == 0
         return setpoints
@@ -70,85 +72,24 @@ function rotate(θ, setpoints)
     return newpoints
 end
 
-# Translate a set of matrices
+# A function to translate every points in a matrix by xTr
 function translate(xTransposed, yTransposed, setpoints)
     if xTransposed == 0 && yTransposed == 0
         return setpoints
+    else
+        newpoints = Tuple{Int,Int}[]
+        for i in setpoints
+            a = collect(i)
+            x = a[1] + xTransposed
+            y = a[2] + yTransposed
+            push!(newpoints, (x, y))
+        end
     end
-    newpoints = Tuple{Int,Int}[]
-    for i in setpoints
-        a = collect(i)
-        x = a[1] + xTransposed
-        y = a[2] + yTransposed
-        push!(newpoints, (x, y))
-    end
+    return newpoints
 end
 
-# Creating a column matrix for concatenation
+# Mapping onto vector and invert it into matrix grid form
 map(n, gridsize, x, y) = x + n + 1 - gridsize * (y - n)
-function vectorize(n, setpoints)
-    gridsize = 2 * n + 1
-    vect = zeros(gridsize^2, 1)
-    for i in setpoints
-        x, y = i[1], i[2]
-        try
-            vect[map(n, gridsize, x, y)] = 1
-        catch
-            0
-        end
-    end
-    return vect
-end
-
-# ellipse = rasterellipse(majoraxis, minoraxis)
-
-# scatter(ellipse, aspect_ratio=:equal)
-# display(vectorize(10, ellipse))
-
-n = 5 # 2n + 1 = gridsize
-N = (2 * n + 1)^2
-# Defining basis
-majorAxisBasis = range(1, 5)
-minorAxisBasis = range(1, 5)
-anglesBasis = range(0, 90, 10)
-transpositionBasis = [(0, 0), (3, 3), (-3, -3), (-3, 3), (3, -3)]
-# Generating a matrix with the basis
-# basisMatrix = Array{Float64}(undef, N)
-basisMatrix = zeros(N, 1)
-for major in majorAxisBasis
-    for minor in minorAxisBasis
-        for angles in anglesBasis
-            for trans in transpositionBasis
-                global n
-                global basisMatrix
-                translatedX = trans[1]
-                translatedY = trans[2]
-                tempEllipse = rotate(deg2rad(angles), rasterellipse(major, minor))
-                translatedEllipse = translate(translatedX, translatedY, tempEllipse)
-                tempVect = vectorize(n, tempEllipse)
-                basisMatrix = hcat(basisMatrix, tempVect)
-            end
-        end
-    end
-end
-
-println("Basis Matrix:")
-display(basisMatrix)
-# pseudoInverseMatrix = LinearAlgebra.pinv(basisMatrix) # Calculate pseudoinverse
-
-# println("Pseudoinverse of Basis Matrix:")
-# display(pseudoInverseMatrix)
-
-println("Picture Vector:")
-pictureVector = vectorize(5, rasterellipse(2, 5))
-display(pictureVector)
-
-println("Line Thickness Vector:")
-lineThickness = basisMatrix\pictureVector
-display(lineThickness)
-
-pictureTransformed = basisMatrix * lineThickness
-
 function inverseMap(n, setpoints)
     gridsize = 2 * n + 1
     points = Array{Float64}(undef, gridsize, gridsize)
@@ -165,8 +106,64 @@ function inverseMap(n, setpoints)
     end
     return points
 end
+# Creating a column matrix for concatenation
+function vectorize(n, setpoints)
+    gridsize = 2 * n + 1
+    vect = zeros(gridsize^2, 1)
+    for i in setpoints
+        x, y = i[1], i[2]
+        try
+            vect[map(n, gridsize, x, y)] = 1
+        catch
+            0
+        end
+    end
+    return vect
+end
 
-pictureMatrix = inverseMap(n, pictureTransformed)
-img = Gray.(pictureMatrix)
+#### Input arguments
 
-plot(heatmap(img), size=(N, N), color=:grays)
+n = 5 # n → amount of pixels from 0 to max(x)
+N = (2 * n + 1)^2 # Amount of pixels
+pictureVector = vectorize(5, rasterellipse(2, 5)) # The input picture
+
+#### Processing
+majorAxisBasis = range(1, 5)
+minorAxisBasis = range(1, 5)
+anglesBasis = range(0, 90, 10)
+transpositionBasis = [(0, 0), (3, 3), (-3, -3), (-3, 3), (3, -3)]
+
+basisMatrix = zeros(N, 1) # Initiate a matrix that will be filled with basis vectors
+for major in majorAxisBasis
+    for minor in minorAxisBasis
+        for angles in anglesBasis
+            for trans in transpositionBasis
+                global n
+                global basisMatrix
+                translatedX = trans[1]
+                translatedY = trans[2]
+                tempEllipse = rotate(deg2rad(angles), rasterellipse(major, minor))
+                translatedEllipse = translate(translatedX, translatedY, tempEllipse)
+                tempVect = vectorize(n, translatedEllipse)
+                basisMatrix = hcat(basisMatrix, tempVect)
+            end
+        end
+    end
+end
+
+# Printing the basis matrix
+println("Basis Matrix:")
+display(basisMatrix)
+
+# Printing the line thickness vector (skipped Pseudoinverse)
+println("Line Thickness Vector:")
+lineThickness = basisMatrix\pictureVector
+display(lineThickness)
+
+# Vector form of the final picture
+pictureTransformed = basisMatrix * lineThickness
+
+finalPixelsArray = inverseMap(n, pictureTransformed) # Invert it into an array form
+img = Gray.(finalPixelsArray) # Creating a grayscaled image
+
+plot(heatmap(img), size=(N, N), color=:grays) # Plotting the image using heatmap
