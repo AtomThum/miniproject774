@@ -1,0 +1,17 @@
+\documentclass{atomtikz}
+
+\begin{document}
+\begin{tikzpicture}
+    \draw[axis] (-4, 0) -- (4, 0);
+    \draw[axis] (0, -4) -- (0, 4);
+
+    \filldraw (0, 0) circle (1pt);
+    \draw (-4, -4) grid (4, 4);
+
+    \foreach \i in {-4, -3,..., 4} {
+        \foreach \j in {-4, -3,..., 4} {
+            \filldraw (\i, \j) circle (1pt);
+        }
+    }
+\end{tikzpicture}
+\end{document}

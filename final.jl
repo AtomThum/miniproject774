@@ -146,26 +146,18 @@ end
 
 n = 7 # n → amount of pixels from 0 to max(x)
 N = (2 * n + 1)^2 # Amount of pixels
-pictureVector = vectorize(n, rasterellipse(7, 7)) + vectorize(n, [
-    (0, 0), (-1, 0), (-2, 0), (-3, 0), (-4, 0), (-5, 0), (-6, 0),
-    (3, 1), (2, 1), (1, 1), (0, 1), (-1, 1), (-2, 1), (-3, 1), (-4, 1), (-5, 1), (-6, 1),
-    (4, 2), (3, 2), (2, 2), (1, 2), (0, 2), (-1, 2), (-2, 2), (-3, 2), (-4, 2), (-5, 2), (-6, 2),
-    (4, 3), (3, 3), (2, 3), (1, 3), (0, 3), (-3, 3), (-4, 3), (-5, 3),
-    (5, 4), (4, 4), (3, 4), (2, 4), (1, 4), (0, 4), (-3, 4), (-4, 4), (-5, 4),
-    (4, 5), (3, 5), (2, 5), (1, 5), (0, 5), (-1, 5), (-2, 5), (-3, 5), (-4, 5),
-    (2, 6), (1, 6), (0, 6), (-1, 6), (-2, 6),
-    (-3, -1), (-4, -1), (-5, -1), (-6, -1),
-    (-4, -2), (-5, -2), (-6, -2),
-    (-5, -3), (-5, -4),
-    (1, -3), (2, -3), (1, -4), (2, -4)
-])# The input picture
+pictureVector = vectorize(n, rasterellipse(4, 4)) + vectorize(n, rasterellipse(6, 6)) + vectorize(n, [
+    (0, 0), (1, 0), (-1, 0), (0, 1),
+    (0, 2), (1, 3), (2, -1), (-1, -1),
+    (-2, -1), (-3, -1)
+])
 
 #### Processing
 majorAxisBasis = range(0, 7)
 minorAxisBasis = range(0, 7)
 anglesBasis = range(0, 90, 5)
 transpositionBasis = [
-    (0, 0), (1, 2)
+    (0, 0), (2, 2), (-2, 2)
 ]
 
 basisMatrix = zeros(N, 1) # Initiate a matrix that will be filled with basis vectors

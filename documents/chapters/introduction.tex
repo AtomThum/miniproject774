@@ -1,1 +1,52 @@
-\chapter{Introduction}
+\section{Introduction and background information}
+
+This project is created with the minds of combining string arts, and pendulum; exploring the creative side of combining mathematics and physics. The project is themed under the subject ESC774: Into the real world oscillation. The research question is
+\begin{quote}
+    \emph{Is it possible to create any arbitrary image from pendulum art?}
+\end{quote}
+Or, in another way,
+\begin{quote}
+    \emph{Can an image be decomposed into multiple pendulum swings?}
+\end{quote}
+
+The research question is almost impossible to tackle with the pendulum that's affected by air resistance and the Coriolis force which gives the pendulum art their characteristics. Therefore, this paper scopes ourselves to a pendulum that's not subjected to any outer forces but gravity. We also allow a degree of freedom that the amount of paint that's dispensed per unit time is controllable
+
+Because of these constraints, the only shapes that a pendulum can trace out are ellipses with varying sizes and rotation angles. It's then possible to reverse engineer these ellipses to figure out the initial condition of the pendulum.
+
+The code that's written will be able to tell how to decompose an image into multiple ellipses, and the output contains
+\begin{enumerate}[noitemsep]
+    \item The ellipses that are used to create the image
+    \item The brightness/darkness of each ellipse
+\end{enumerate}
+The final image will also then be plotted as a heatmap.
+
+Since every ellipse can be traced back to a pendulum, we shall only focus on the ellipses for the rest of the paper. We shall give the ellipses only four degrees of freedom:
+\begin{enumerate}[noitemsep]
+    \item Semi-major axis length
+    \item Semi-minor axis length
+    \item Ellipse rotation
+    \item Ellipse position
+\end{enumerate}
+It should be immediately obvious that the time-complexity for this algorithm is at minimum, $\mathcal{O}(n^4)$.
+
+\section{Fourier transform and vector spaces}
+
+The Fourier transform is a well-known procedure for decomposing any waves into sum of sine waves, which is commonly seen in audio programs, as shown in \cref{fig:audiogram}. That is, it maps the amplitude domain into the frequencies domain.
+\begin{figure}[ht]
+    \centering
+    \includegraphics{spectrogramrickroll.png}
+    \caption{The waveform and spectrogram view of the first few seconds of audio from the song Never Gonna Give You Up by Rick Astley}
+    \label{fig:audiogram}
+\end{figure}
+
+In quantum mechanics, everything is represented as state vectors. A state vector must contain all the information about a system. In this mindset, the Fourier transform can be thought of a transformation of a vector $\ket{\psi}$ from the amplitude space to the frequencies space. Because no information is lost with the transform, the Fourier transform can be thought of a change of basis vector from the amplitude basis to the frequencies basis.
+
+The Fourier transform naturally occurs when the momentum basis $\{\ket{p\prime}\}$ is projected onto the position basis $\{\ket{x\prime}\}$,
+\begin{equation}
+    \braket{x\prime}{p\prime} = \frac{1}{\sqrt{2\cpi\hbar}}\exp[\frac{\iu}{\hbar}x\prime p\prime].
+\end{equation}
+Thus, the Fourier transform is considered to be the special case where the basis conversion is between amplitude and frequencies. Generally, one can select or construct a basis to transform by themselves. In this paper, the problem will be tackled by using the transformation from the ellipses basis and the pixels basis by constructing the basis ourselves. Because the transform is going to be done using numerical methods, the basis constructed must be discretized.
+
+\section{Construction of discretized basis}
+
+The pixels basis can be easily constructed. For any picture of size $2n + 1$, we construct a grid as shown in \cref{fig:pixelsgrid} where each lattice point represents a pixel that will be plotted as heatmaps in the final image
