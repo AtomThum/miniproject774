@@ -4,6 +4,8 @@ using Colors # For heatmapping
 
 #### Functions
 
+elapsedTime = @elapsed begin
+
 # Ellipse tracing algorithm
 function rasterellipse(a, b)
     # Initial position of trace
@@ -101,7 +103,7 @@ function inverseMap(n, setpoints)
             xIndex = mod(counter, gridsize)
         end
         yIndex = ceil(Int64, counter/gridsize)
-        points[xIndex, yIndex] = i
+        points[yIndex, xIndex] = i
         counter += 1
     end
     return points
@@ -121,17 +123,44 @@ function vectorize(n, setpoints)
     return vect
 end
 
+function myNormalizedVector(setpoints::Matrix{Float64}, a::Float64 = 0.0, b::Float64 = 1.0)
+    minValue = minimum(setpoints)
+    maxValue = maximum(setpoints)
+    
+    if minValue == maxValue
+        return fill((a + b) / 2, size(setpoints))
+    else
+        return a .+ ((setpoints .- minValue) / (maxValue - minValue)) .* (b - a)
+    end
+end
+
+function basisConstruction(n::Int)
+    coordinates = Tuple{Int, Int}[]
+    for row in -n:n
+        for col in -n:n
+            push!(coordinates, (row, col))
+        end
+    end
+    return tuple(coordinates...)
+end
+
 #### Input arguments
 
-n = 5 # n → amount of pixels from 0 to max(x)
+n = 6 # n → amount of pixels from 0 to max(x)
 N = (2 * n + 1)^2 # Amount of pixels
-pictureVector = vectorize(5, rasterellipse(2, 5)) # The input picture
+pictureVector = vectorize(n, rasterellipse(4, 4)) + vectorize(n, rasterellipse(6, 6)) + vectorize(n, [
+    (0, 0), (1, 0), (-1, 0), (0, 1),
+    (0, 2), (1, 3), (2, -1), (-1, -1),
+    (-2, -1), (-3, -1), (-4, -1)
+]) # The input picture
 
 #### Processing
-majorAxisBasis = range(1, 5)
-minorAxisBasis = range(1, 5)
-anglesBasis = range(0, 90, 10)
-transpositionBasis = [(0, 0), (3, 3), (-3, -3), (-3, 3), (3, -3)]
+majorAxisBasis = range(0, 6)
+minorAxisBasis = range(0, 6)
+anglesBasis = range(0, 90, 5)
+transpositionBasis = [
+    (0, 0), (-2, 1)
+]
 
 basisMatrix = zeros(N, 1) # Initiate a matrix that will be filled with basis vectors
 for major in majorAxisBasis
@@ -157,13 +186,21 @@ display(basisMatrix)
 
 # Printing the line thickness vector (skipped Pseudoinverse)
 println("Line Thickness Vector:")
-lineThickness = basisMatrix\pictureVector
+lineThickness = (basisMatrix\pictureVector)
 display(lineThickness)
 
 # Vector form of the final picture
 pictureTransformed = basisMatrix * lineThickness
 
-finalPixelsArray = inverseMap(n, pictureTransformed) # Invert it into an array form
-img = Gray.(finalPixelsArray) # Creating a grayscaled image
+finalPixelsArray = myNormalizedVector(inverseMap(n, pictureTransformed)) # Invert it into an array form
 
-plot(heatmap(img), size=(N, N), color=:grays) # Plotting the image using heatmap
+originalImage = Gray.(inverseMap(n, pictureVector))
+finalImage = Gray.(finalPixelsArray) # Creating a grayscaled image
+
+plot1 = plot(heatmap(finalImage), size=(N, N), color=:grays) # Plotting the finalized image
+plot2 = plot(heatmap(originalImage), size = (N, N), color=:grays)
+
+plot(plot1, plot2, layout = (1, 2), size = (500, 250))
+
+end
+display(elapsedTime)
