@@ -10,7 +10,11 @@
 
     \foreach \i in {-4, -3,..., 4} {
         \foreach \j in {-4, -3,..., 4} {
-            \filldraw (\i, \j) circle (1pt);
+            \filldraw (\i, \j) circle (3pt);
+            \tikzmath{
+                \num = \i + 5 - 9 * (\j - 4);
+            }
+            \node[below right] at (\i, \j){\pgfmathprintnumber[precision=0]{\num}};
         }
     }
 \end{tikzpicture}

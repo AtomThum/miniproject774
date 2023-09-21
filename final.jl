@@ -100,7 +100,7 @@ function inverseMap(n, setpoints)
         else
             xIndex = mod(counter, gridsize)
         end
-        yIndex = ceil(Int64, counter/gridsize)
+        yIndex = ceil(Int64, counter / gridsize)
         points[yIndex, xIndex] = i
         counter += 1
     end
@@ -124,7 +124,7 @@ end
 function myNormalizedVector(setpoints::Matrix{Float64}, a::Float64 = 0.0, b::Float64 = 1.0)
     minValue = minimum(setpoints)
     maxValue = maximum(setpoints)
-    
+
     if minValue == maxValue
         return fill((a + b) / 2, size(setpoints))
     else
@@ -144,20 +144,38 @@ end
 
 #### Input arguments
 
-n = 7 # n → amount of pixels from 0 to max(x)
+n = 10 # n → amount of pixels from 0 to max(x)
 N = (2 * n + 1)^2 # Amount of pixels
-pictureVector = vectorize(n, rasterellipse(4, 4)) + vectorize(n, rasterellipse(6, 6)) + vectorize(n, [
-    (0, 0), (1, 0), (-1, 0), (0, 1),
-    (0, 2), (1, 3), (2, -1), (-1, -1),
-    (-2, -1), (-3, -1)
-])
+pictureVector = [
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0.5, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+    0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0.5, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+    0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0.5, 0.5, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+    0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5, 0.5, 0.5, 0, 1, 0, 0, 0,
+    0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+    0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+    0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+    0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+    0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+]
 
 #### Processing
-majorAxisBasis = range(0, 7)
-minorAxisBasis = range(0, 7)
+majorAxisBasis = range(0, 10)
+minorAxisBasis = range(0, 10)
 anglesBasis = range(0, 90, 5)
 transpositionBasis = [
-    (0, 0), (2, 2), (-2, 2)
+    (0, 0), (4, 5), (-4, -5)
 ]
 
 basisMatrix = zeros(N, 1) # Initiate a matrix that will be filled with basis vectors
@@ -184,7 +202,7 @@ display(basisMatrix)
 
 # Printing the line thickness vector (skipped Pseudoinverse)
 println("Line Thickness Vector:")
-lineThickness = (basisMatrix\pictureVector)
+lineThickness = (basisMatrix \ pictureVector)
 display(lineThickness)
 
 # Vector form of the final picture
@@ -196,6 +214,6 @@ originalImage = Gray.(inverseMap(n, pictureVector))
 finalImage = Gray.(finalPixelsArray) # Creating a grayscaled image
 
 plot1 = plot(heatmap(finalImage), size=(N, N), color=:grays) # Plotting the finalized image
-plot2 = plot(heatmap(originalImage), size = (N, N), color=:grays)
+plot2 = plot(heatmap(originalImage), size=(N, N), color=:grays)
 
-plot(plot1, plot2, layout = (1, 2), size = (500, 250))
+plot(plot1, plot2, layout=(1, 2), size=(500, 250))

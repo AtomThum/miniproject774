@@ -47,6 +47,26 @@ The Fourier transform naturally occurs when the momentum basis $\{\ket{p\prime}\
 \end{equation}
 Thus, the Fourier transform is considered to be the special case where the basis conversion is between amplitude and frequencies. Generally, one can select or construct a basis to transform by themselves. In this paper, the problem will be tackled by using the transformation from the ellipses basis and the pixels basis by constructing the basis ourselves. Because the transform is going to be done using numerical methods, the basis constructed must be discretized.
 
-\section{Construction of discretized basis}
+\section{Construction of the image vector and the basis used}
 
-The pixels basis can be easily constructed. For any picture of size $2n + 1$, we construct a grid as shown in \cref{fig:pixelsgrid} where each lattice point represents a pixel that will be plotted as heatmaps in the final image
+We start from the construction of the image vector that we want to transform into the ellipse basis. This vector $\vv{B}$ will be in the pixels space.
+
+The pixels basis can be easily constructed. For any picture of size $2n + 1$, we construct a grid as shown in \cref{fig:pixelsgrid} where each lattice point represents a pixel that will be plotted as heatmaps in the final image.
+\begin{figure}
+    \centering
+    \includegraphics{pixelsmapping.pdf}
+    \caption{Examples of pixels mapping where $n = 4$, and the grid size equals $2n + 1$}
+    \label{fig:pixelsgrid}
+\end{figure}
+
+The mapping function $\mathcal{M}$ from cartesian coordinate centered at $(0, 0)$ to the pixel space can be written as
+\begin{equation}
+    \mathcal{M}(n, x, y) = x + n + 1 - (2n + 1)(y - n).
+\end{equation}
+
+Each pixel $b_n$ will then be assigned its value according to the brightness ranging from $0$ to $1$ where $1$ is the brightest. The whole picture can then be expressed as a column vector $\vv{B}$ containing the brightness value of each points. For an arbitrary $n$, the column vector will have the dimension $2n + 1$ which is called $N$:
+\begin{equation}
+    \vv{B} = \mqty[b_1 \\ b_2 \\ \vdots \\ b_{N - 1} \\ b_{N}].
+\end{equation}
+
+Now, we shall 
