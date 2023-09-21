@@ -146,37 +146,14 @@ end
 
 n = 10 # n → amount of pixels from 0 to max(x)
 N = (2 * n + 1)^2 # Amount of pixels
-pictureVector = [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0.75, 1, 1, 1, 1, 1, 0.75, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0,
-    0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0,
-    0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0,
-    0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0.75, 0, 1, 0, 0, 1, 0, 0,
-    0, 0.75, 1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0.75, 0,
-    0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0.3, 0, 0, 0, 0, 1, 0, 1, 1, 0,
-    0, 1, 0, 1, 0.75, 0, 0, 0, 0, 0, 1, 0.3, 0, 0, 0, 0, 0, 1, 0, 1, 0,
-    0, 1, 0, 1, 0.75, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0,
-    0, 1, 0, 1, 0.4, 0, 1, 1, 1, 1, 0.6, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0,
-    0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
-    0, 0.75, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0.75, 0,
-    0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0,
-    0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0.75, 1, 0, 0, 1, 1, 0, 0,
-    0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0.5, 1, 1, 0, 0, 1, 1, 0, 0, 0,
-    0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0.75, 1, 1, 1, 1, 1, 0.75, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-]
+# Circle
+pictureVector = vectorize(n, rasterellipse(5, 5)) + vectorize(n, rasterellipse(7, 7))
 
 #### Processing
 majorAxisBasis = range(0, 10)
 minorAxisBasis = range(0, 10)
 anglesBasis = range(0, 90, 5)
-transpositionBasis = [
-    (0, 0), (1, 2)
-]
+transpositionBasis = [(0, 0), (-2, 1), (2, 2), (0, -3)]
 
 basisMatrix = zeros(N, 1) # Initiate a matrix that will be filled with basis vectors
 for major in majorAxisBasis
@@ -203,7 +180,6 @@ display(basisMatrix)
 # Printing the line thickness vector (skipped Pseudoinverse)
 println("Line Thickness Vector:")
 lineThickness = (basisMatrix \ pictureVector)
-display(lineThickness)
 
 # Vector form of the final picture
 pictureTransformed = basisMatrix * lineThickness
@@ -215,5 +191,11 @@ finalImage = Gray.(finalPixelsArray) # Creating a grayscaled image
 
 plot1 = plot(heatmap(finalImage), size=(N, N), color=:grays) # Plotting the finalized image
 plot2 = plot(heatmap(originalImage), size=(N, N), color=:grays)
+
+println("Picture vector:")
+display(pictureVector)
+
+println("Line thickness:")
+display(myNormalizedVector(lineThickness))
 
 plot(plot1, plot2, layout=(1, 2), size=(500, 250))
