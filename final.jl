@@ -10,7 +10,7 @@ function rasterellipse(a, b)
     x = 0
     y = b
 
-    points = Tuple{Int,Int}[] # Initialize a tuple to store the points in the ellipse
+    points = Tuple{Int, Int}[] # Initialize a tuple to store the points in the ellipse
     aSqr = a * a # Precalc for saving computation time
     bSqr = b * b
     aSqr2 = 2 * aSqr
