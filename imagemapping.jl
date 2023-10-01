@@ -1,4 +1,5 @@
 using Images, TestImages
+using DelimitedFiles
 
 idealImgSize = 10
 
@@ -12,7 +13,8 @@ xOffset = round(Int64, (size(img, 1) - minSize)/2 + 1)
 yOffset = round(Int64, (size(img, 2) - minSize)/2 + 1)
 
 croppedImg = img[xOffset:xOffset + minSize - 1, yOffset:yOffset + minSize - 1]
-idealImg = Float64.(imresize(croppedImg, (N, N)))
+Img = imresize(croppedImg, (N, N))
+idealImg = Float64.(Img)
 
 imageVect = Vector{Float64}()
 for i in range(1, N)
@@ -21,4 +23,5 @@ for i in range(1, N)
         push!(imageVect, pixelBrightness)
     end
 end
-display(imageVect)
+
+writedlm("img.txt", imageVect)

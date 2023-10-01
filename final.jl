@@ -1,6 +1,7 @@
 using Plots
 using LinearAlgebra
 using Colors # For heatmapping
+using DelimitedFiles
 
 #### Functions
 
@@ -146,8 +147,7 @@ end
 
 n = 10 # n → amount of pixels from 0 to max(x)
 N = (2 * n + 1)^2 # Amount of pixels
-# Circle
-pictureVector = vectorize(n, rasterellipse(5, 5)) + vectorize(n, rasterellipse(7, 7))
+pictureVector = readdlm("img.txt")
 
 #### Processing
 majorAxisBasis = range(0, 10)
